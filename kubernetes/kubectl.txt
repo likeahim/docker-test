@@ -1,0 +1,18 @@
+kubectl -n nginx-ns get deployments
+
+kubectl -n nginx-ns describe deployment nginx-app
+
+kubectl -n nginx-ns get pods -o name
+
+kubectl -n nginx-ns get deployment nginx-app -o yaml
+
+kubectl -nginx-ns exec nginx-app-69999bf9b8-4kvgx -- cat /etc/hosts
+
+kubectl -n nginx-ns delete pod nginx-app-69999bf9b8-4kvgx
+
+kubectl -n nginx-ns delete deployment nginx-app
+
+kubectl delete namespace nginx-ns
+
+
+#plik ze screenami: https://docs.google.com/document/d/1ysGFYez5ss9eMXU-Yf7VaJg4nqcaUGRYVqWAAXrcDjQ/edit?tab=t.0
