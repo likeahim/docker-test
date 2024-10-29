@@ -1,0 +1,71 @@
+version: '3.8'
+
+services:
+  store-frontend:
+    image: likeahim/store-frontend:latest
+    container_name: store-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - REACT_APP_PRODUCTS_API=http://products-api:8080
+    depends_on:
+      - products-api
+
+  products-api:
+    image: likeahim/products-api:latest
+    container_name: products-api
+    environment:
+      MYSQL_HOST: ${MYSQL_HOST}
+      MYSQL_PORT: ${MYSQL_PORT}
+      MYSQL_USERNAME: ${MYSQL_USERNAME}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      RABBITMQ_HOST: ${RABBITMQ_HOST}
+      RABBITMQ_PORT: ${RABBITMQ_PORT}
+      RABBITMQ_QUEUE_NAME: ${RABBITMQ_QUEUE_NAME}
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql-db
+      - rabbitmq
+
+  notifications-api:
+    image: likeahim/notifications-api:latest
+    container_name: notifications-api
+    environment:
+      RABBITMQ_HOST: ${RABBITMQ_HOST}
+      RABBITMQ_PORT: ${RABBITMQ_PORT}
+      RABBITMQ_QUEUE_NAME: ${RABBITMQ_QUEUE_NAME}
+    ports:
+      - "5001:5001"
+    depends_on:
+      - rabbitmq
+
+  mysql-db:
+    image: mysql:8.0
+    container_name: mysql-db
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USERNAME}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: ${MYSQL_USERNAME}
+      RABBITMQ_DEFAULT_PASS: ${MYSQL_PASSWORD}
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+
+volumes:
+  mysql_data:
+  rabbitmq_data:
